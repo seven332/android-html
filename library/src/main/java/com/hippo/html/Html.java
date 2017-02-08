@@ -966,6 +966,8 @@ class HtmlToSpannedConverter implements ContentHandler {
             startA(mSpannableStringBuilder, attributes);
         } else if (tag.equalsIgnoreCase("u")) {
             start(mSpannableStringBuilder, new Underline());
+        } else if (tag.equalsIgnoreCase("ins")) {
+            start(mSpannableStringBuilder, new Underline());
         } else if (tag.equalsIgnoreCase("del")) {
             start(mSpannableStringBuilder, new Strikethrough());
         } else if (tag.equalsIgnoreCase("s")) {
@@ -1026,6 +1028,8 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (tag.equalsIgnoreCase("a")) {
             endA(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("u")) {
+            end(mSpannableStringBuilder, Underline.class, new UnderlineSpan());
+        } else if (tag.equalsIgnoreCase("ins")) {
             end(mSpannableStringBuilder, Underline.class, new UnderlineSpan());
         } else if (tag.equalsIgnoreCase("del")) {
             end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());

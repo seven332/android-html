@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -60,5 +61,14 @@ public class HtmlTest {
     assertEquals(1, spans.length);
     assertTrue(spans[0] instanceof ForegroundColorSpan);
     assertEquals(Color.BLUE, ((ForegroundColorSpan) spans[0]).getForegroundColor());
+  }
+
+  @Test
+  public void testTagIns() throws Exception {
+    Spanned text = Html.fromHtml("<ins>Hello</ins>", Html.FROM_HTML_MODE_COMPACT);
+    assertEquals("Hello", text.toString());
+    Object[] spans = text.getSpans(0, 1, UnderlineSpan.class);
+    assertEquals(1, spans.length);
+    assertTrue(spans[0] instanceof UnderlineSpan);
   }
 }
