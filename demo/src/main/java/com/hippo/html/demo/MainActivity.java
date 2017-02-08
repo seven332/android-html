@@ -17,9 +17,17 @@
 package com.hippo.html.demo;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
 import android.widget.TextView;
 import com.hippo.html.Html;
+import org.xml.sax.Attributes;
+import org.xml.sax.XMLReader;
 
 public class MainActivity extends Activity {
 
@@ -34,7 +42,9 @@ public class MainActivity extends Activity {
       + "<p>公入而赋：“大隧之中，其乐也融融。”姜出而赋：“大隧之外，其乐也泄泄！”遂为母子如初。</p>"
       + "<p>君子曰：“颍考叔，纯孝也，爱其母，施及庄公。《诗》曰：‘孝子不匮，永锡尔类’，其是之谓乎？”</p>"
       + "<img src=\"unknown\">"
-      + "<ins>underline</ins>";
+      + "<ins>underline</ins>"
+      + "<横杠>StrikeThrough</横杠>"
+      + "<b>Italic</b>";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +52,72 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
 
     TextView text = (TextView) findViewById(R.id.text);
-    text.setText(Html.fromHtml(P, Html.FROM_HTML_MODE_LEGACY));
+    text.setText(Html.fromHtml(P, Html.FROM_HTML_MODE_LEGACY, null, new TestTagHandler()));
+  }
+
+  private static class TestTagHandler implements Html.TagHandler {
+
+    @Override
+    public boolean handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader,
+        Attributes attributes) {
+      if ("横杠".equalsIgnoreCase(tag)) {
+        if (opening) {
+          start(output, new StrikeThrough());
+        } else {
+          end(output, StrikeThrough.class, new StrikethroughSpan());
+        }
+        return true;
+      } else if ("b".equalsIgnoreCase(tag)) {
+        if (opening) {
+          start(output, new Italic());
+        } else {
+          end(output, Italic.class, new StyleSpan(Typeface.ITALIC));
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    private static void start(Editable text, Object mark) {
+      int len = text.length();
+      text.setSpan(mark, len, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
+
+    private static void end(Editable text, Class kind, Object repl) {
+      int len = text.length();
+      Object obj = getLast(text, kind);
+      if (obj != null) {
+        setSpanFromMark(text, obj, repl);
+      }
+    }
+
+    private static <T> T getLast(Spanned text, Class<T> kind) {
+        /*
+         * This knows that the last returned object from getSpans()
+         * will be the most recently added.
+         */
+      T[] objs = text.getSpans(0, text.length(), kind);
+
+      if (objs.length == 0) {
+        return null;
+      } else {
+        return objs[objs.length - 1];
+      }
+    }
+
+    private static void setSpanFromMark(Spannable text, Object mark, Object... spans) {
+      int where = text.getSpanStart(mark);
+      text.removeSpan(mark);
+      int len = text.length();
+      if (where != len) {
+        for (Object span : spans) {
+          text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+      }
+    }
+
+    private static class StrikeThrough {}
+    private static class Italic {}
   }
 }

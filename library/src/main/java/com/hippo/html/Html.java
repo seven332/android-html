@@ -87,11 +87,18 @@ public class Html {
      */
     public static interface TagHandler {
         /**
-         * This method will be called whenn the HTML parser encounters
-         * a tag that it does not know how to interpret.
+         * This method parses HTML tags.
+         * <p>
+         * Return {@code true} if the tag is consumed, otherwise
+         * the default HTML parser handles it.
+         * <p>
+         * End tag must be handled if start tag is handled, or something
+         * wrong might happen.
+         * <p>
+         * {@code attributes} is {@code null} if {@code opening} is {@code false}.
          */
-        public void handleTag(boolean opening, String tag,
-                                 Editable output, XMLReader xmlReader);
+        public boolean handleTag(boolean opening, String tag,
+                                 Editable output, XMLReader xmlReader, Attributes attributes);
     }
 
     /**
@@ -926,6 +933,12 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void handleStartTag(String tag, Attributes attributes) {
+        if (mTagHandler != null &&
+                mTagHandler.handleTag(true, tag, mSpannableStringBuilder, mReader, attributes)) {
+            // TagHandler handled it!
+            return;
+        }
+
         if (tag.equalsIgnoreCase("br")) {
             // We don't need to handle this. TagSoup will ensure that there's a </br> for each <br>
             // so we can safely emit the linebreaks when we handle the close tag.
@@ -984,12 +997,16 @@ class HtmlToSpannedConverter implements ContentHandler {
             startHeading(mSpannableStringBuilder, attributes, tag.charAt(1) - '1');
         } else if (tag.equalsIgnoreCase("img")) {
             startImg(mSpannableStringBuilder, attributes, mImageGetter);
-        } else if (mTagHandler != null) {
-            mTagHandler.handleTag(true, tag, mSpannableStringBuilder, mReader);
         }
     }
 
     private void handleEndTag(String tag) {
+        if (mTagHandler != null &&
+            mTagHandler.handleTag(false, tag, mSpannableStringBuilder, mReader, null)) {
+            // TagHandler handled it!
+            return;
+        }
+
         if (tag.equalsIgnoreCase("br")) {
             handleBr(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("p")) {
@@ -1045,8 +1062,6 @@ class HtmlToSpannedConverter implements ContentHandler {
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
             endHeading(mSpannableStringBuilder);
-        } else if (mTagHandler != null) {
-            mTagHandler.handleTag(false, tag, mSpannableStringBuilder, mReader);
         }
     }
 
