@@ -46,6 +46,7 @@ import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -1241,17 +1242,21 @@ class HtmlToSpannedConverter implements ContentHandler {
         if (style != null) {
             Matcher m = getForegroundColorPattern().matcher(style);
             if (m.find()) {
-                int c = getHtmlColor(m.group(1));
-                if (c != -1) {
+                try {
+                    int c = getHtmlColor(m.group(1));
                     start(text, new Foreground(c | 0xFF000000));
+                } catch (ParseException e) {
+                    // Ignore
                 }
             }
 
             m = getBackgroundColorPattern().matcher(style);
             if (m.find()) {
-                int c = getHtmlColor(m.group(1));
-                if (c != -1) {
+                try {
+                    int c = getHtmlColor(m.group(1));
                     start(text, new Background(c | 0xFF000000));
+                } catch (ParseException e) {
+                    // Ignore
                 }
             }
 
@@ -1308,9 +1313,11 @@ class HtmlToSpannedConverter implements ContentHandler {
         String face = attributes.getValue("", "face");
 
         if (!TextUtils.isEmpty(color)) {
-            int c = getHtmlColor(color);
-            if (c != -1) {
+            try {
+                int c = getHtmlColor(color);
                 start(text, new Foreground(c | 0xFF000000));
+            } catch (ParseException e) {
+                // Ignore
             }
         }
 
@@ -1346,15 +1353,16 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private int getHtmlColor(String color) {
+    private int getHtmlColor(String color) throws ParseException {
+        color = color.trim();
         try {
             return getHtmlColorInternal(color);
         } catch (NumberFormatException e) {
-            return -1;
+            throw new ParseException("Unknown color: " + color, 0);
         }
     }
 
-    private int getHtmlColorInternal(String color) throws NumberFormatException {
+    private int getHtmlColorInternal(String color) throws NumberFormatException, ParseException {
         if (color.charAt(0) == '#') {
             // Use a long to avoid rollovers on #ffXXXXXX
             long c = Long.parseLong(color.substring(1), 16);
@@ -1373,7 +1381,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                 return c;
             }
         }
-        return -1;
+        throw new ParseException("Unknown color: " + color, 0);
     }
 
     public void setDocumentLocator(Locator locator) {

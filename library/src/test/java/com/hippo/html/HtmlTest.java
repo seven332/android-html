@@ -69,6 +69,16 @@ public class HtmlTest {
   }
 
   @Test
+  public void testColor4() throws Exception {
+    Spanned text = Html.fromHtml("<font color=\"#ffffff\">Hello</font>", Html.FROM_HTML_MODE_COMPACT);
+    assertEquals("Hello", text.toString());
+    Object[] spans = text.getSpans(0, 1, ForegroundColorSpan.class);
+    assertEquals(1, spans.length);
+    assertTrue(spans[0] instanceof ForegroundColorSpan);
+    assertEquals(-1, ((ForegroundColorSpan) spans[0]).getForegroundColor());
+  }
+
+  @Test
   public void testTagIns() throws Exception {
     Spanned text = Html.fromHtml("<ins>Hello</ins>", Html.FROM_HTML_MODE_COMPACT);
     assertEquals("Hello", text.toString());
