@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hippo.html;
+package com.hippo.android.html;
 
 /*
  * Created by Hippo on 2/8/2017.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hippo.html.demo;
+package com.hippo.android.html.demo;
 
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -25,7 +25,7 @@ import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.widget.TextView;
-import com.hippo.html.Html;
+import com.hippo.android.html.Html;
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
 

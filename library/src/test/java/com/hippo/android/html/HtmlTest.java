@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hippo.html;
+package com.hippo.android.html;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
