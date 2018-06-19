@@ -20,7 +20,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -34,8 +33,8 @@ import org.robolectric.annotation.Config;
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
 
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.N_MR1)
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class HtmlTest {
 
   @Test

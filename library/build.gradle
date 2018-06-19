@@ -18,12 +18,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 2
         versionName "0.1.1"
     }
@@ -37,9 +36,9 @@ android {
 }
 
 dependencies {
-    compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
-    testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.2.2"
+    implementation 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.6.1'
 }
 
 // build a jar with source files
